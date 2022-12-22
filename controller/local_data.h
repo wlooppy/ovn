@@ -136,7 +136,8 @@ struct chassis_tunnel {
 void local_nonvif_data_run(const struct ovsrec_bridge *br_int,
                            const struct sbrec_chassis *,
                            struct simap *patch_ofports,
-                           struct hmap *chassis_tunnels);
+                           struct hmap *chassis_tunnels,
+                           struct simap *physical_ofports);
 
 bool local_nonvif_data_handle_ovs_iface_changes(
     const struct ovsrec_interface_table *);

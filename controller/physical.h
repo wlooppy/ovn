@@ -57,6 +57,7 @@ struct physical_ctx {
     enum mf_field_id mff_ovn_geneve;
     struct shash *local_bindings;
     struct simap *patch_ofports;
+    struct simap *physical_ofports;
     struct hmap *chassis_tunnels;
 };
 

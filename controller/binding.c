@@ -386,7 +386,7 @@ update_ld_localnet_port(const struct sbrec_port_binding *binding_rec,
                         struct hmap *local_datapaths)
 {
     /* Ignore localnet ports for unplugged networks. */
-    if (!is_network_plugged(binding_rec, bridge_mappings)) {
+    if (!is_network_plugged(binding_rec, bridge_mappings) && (NULL == smap_get(&binding_rec->options, "physicalout_nic"))) {
         return;
     }
 

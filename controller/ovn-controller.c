@@ -2225,6 +2225,7 @@ struct ed_type_non_vif_data {
     struct simap patch_ofports; /* simap of patch ovs ports. */
     struct hmap chassis_tunnels; /* hmap of 'struct chassis_tunnel' from the
                                   * tunnel OVS ports. */
+    struct simap physical_ofports; /* simap of physical ovs ports. */
 };
 
 static void *
@@ -2234,6 +2235,7 @@ en_non_vif_data_init(struct engine_node *node OVS_UNUSED,
     struct ed_type_non_vif_data *data = xzalloc(sizeof *data);
     simap_init(&data->patch_ofports);
     hmap_init(&data->chassis_tunnels);
+    simap_init(&data->physical_ofports);
     return data;
 }
 
@@ -2243,6 +2245,7 @@ en_non_vif_data_cleanup(void *data OVS_UNUSED)
     struct ed_type_non_vif_data *ed_non_vif_data = data;
     simap_destroy(&ed_non_vif_data->patch_ofports);
     chassis_tunnels_destroy(&ed_non_vif_data->chassis_tunnels);
+    simap_destroy(&ed_non_vif_data->physical_ofports);
 }
 
 static void
@@ -2250,9 +2253,11 @@ en_non_vif_data_run(struct engine_node *node, void *data)
 {
     struct ed_type_non_vif_data *ed_non_vif_data = data;
     simap_destroy(&ed_non_vif_data->patch_ofports);
+    simap_destroy(&ed_non_vif_data->physical_ofports);
     chassis_tunnels_destroy(&ed_non_vif_data->chassis_tunnels);
     simap_init(&ed_non_vif_data->patch_ofports);
     hmap_init(&ed_non_vif_data->chassis_tunnels);
+    simap_init(&ed_non_vif_data->physical_ofports);
 
     struct ovsrec_open_vswitch_table *ovs_table =
         (struct ovsrec_open_vswitch_table *)EN_OVSDB_GET(
@@ -2275,7 +2280,7 @@ en_non_vif_data_run(struct engine_node *node, void *data)
     ovs_assert(chassis);
 
     local_nonvif_data_run(br_int, chassis, &ed_non_vif_data->patch_ofports,
-                          &ed_non_vif_data->chassis_tunnels);
+                          &ed_non_vif_data->chassis_tunnels,&ed_non_vif_data->physical_ofports);
     engine_set_node_state(node, EN_UPDATED);
 }
 
@@ -2967,6 +2972,7 @@ static void init_physical_ctx(struct engine_node *node,
     p_ctx->mff_ovn_geneve = ed_mff_ovn_geneve->mff_ovn_geneve;
     p_ctx->local_bindings = &rt_data->lbinding_data.bindings;
     p_ctx->patch_ofports = &non_vif_data->patch_ofports;
+    p_ctx->physical_ofports = &non_vif_data->physical_ofports;
     p_ctx->chassis_tunnels = &non_vif_data->chassis_tunnels;
 }
 

@@ -358,7 +358,8 @@ void
 local_nonvif_data_run(const struct ovsrec_bridge *br_int,
                       const struct sbrec_chassis *chassis_rec,
                       struct simap *patch_ofports,
-                      struct hmap *chassis_tunnels)
+                      struct hmap *chassis_tunnels,
+                      struct simap *physical_ofports)
 {
     for (int i = 0; i < br_int->n_ports; i++) {
         const struct ovsrec_port *port_rec = br_int->ports[i];
@@ -392,12 +393,21 @@ local_nonvif_data_run(const struct ovsrec_bridge *br_int,
             }
 
             bool is_patch = !strcmp(iface_rec->type, "patch");
+            // workarround for interface type not has physical type
+            bool is_physical_nic = !strcmp(iface_rec->type, "system");
             if (is_patch && localnet) {
                 simap_put(patch_ofports, localnet, ofport);
                 break;
             } else if (is_patch && l2gateway) {
-                /* L2 gateway patch ports can be handled just like VIFs. */
-                simap_put(patch_ofports, l2gateway, ofport);
+            /* L2 gateway patch ports can be handled just like VIFs. */
+                simap_put(patch_ofports, l2gateway, ofport); 
+                break;
+            } else if (is_physical_nic) {
+                if(iface_rec->name)
+                    VLOG_INFO("physicalout_nic4: %s",iface_rec->name);
+                const char * nic_name = iface_rec->name;
+                VLOG_INFO("physicalout_nic5: %d",ofport);    
+                simap_put(physical_ofports, nic_name, ofport); 
                 break;
             } else if (tunnel_id) {
                 enum chassis_tunnel_type tunnel_type;

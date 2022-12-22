@@ -899,6 +899,7 @@ consider_port_binding(struct ovsdb_idl_index *sbrec_port_binding_by_name,
                       const struct hmap *local_datapaths,
                       const struct shash *local_bindings,
                       const struct simap *patch_ofports,
+                      const struct simap *physical_ofports,
                       const struct hmap *chassis_tunnels,
                       const struct sbrec_port_binding *binding,
                       const struct sbrec_chassis *chassis,
@@ -1052,6 +1053,7 @@ consider_port_binding(struct ovsdb_idl_index *sbrec_port_binding_by_name,
     const struct sbrec_port_binding *parent_port = NULL;
     ofp_port_t ofport;
     bool is_remote = false;
+    VLOG_INFO("lsp type: %s",binding->type);
     if (binding->parent_port && *binding->parent_port) {
         if (!binding->tag) {
             goto out;
@@ -1067,10 +1069,18 @@ consider_port_binding(struct ovsdb_idl_index *sbrec_port_binding_by_name,
     } else if (!strcmp(binding->type, "localnet")
              || !strcmp(binding->type, "l2gateway")) {
 
-        ofport = u16_to_ofp(simap_get(patch_ofports,
-                                      binding->logical_port));
+        char* nic_name = smap_get(&binding->options, "physicalout_nic");
+        if(nic_name && binding->logical_port)
+            VLOG_INFO("logical_port: %s, physicalout_nic: %s",binding->logical_port,nic_name);
+
+        if(physical_ofports && nic_name) {
+            ofport = u16_to_ofp(simap_get(physical_ofports,
+                                      nic_name));
+            VLOG_INFO("logical_port: %s, out_nic ofindex: %d",binding->logical_port,ofport);
+        }
         if (ofport && binding->tag) {
             tag = *binding->tag;
+            VLOG_INFO("logical_port: %s, vlan: %d",binding->logical_port,tag);
         }
     } else {
         ofport = local_binding_get_lport_ofport(local_bindings,
@@ -1093,6 +1103,17 @@ consider_port_binding(struct ovsdb_idl_index *sbrec_port_binding_by_name,
         if (localnet_port) {
             ofport = u16_to_ofp(simap_get(patch_ofports,
                                           localnet_port->logical_port));
+            
+            char* nic_name = smap_get(&localnet_port->options, "physicalout_nic");
+            if(nic_name && binding->logical_port)
+                VLOG_INFO("logical_port: %s, physicalout_nic6: %s",binding->logical_port,nic_name);
+
+            if(physical_ofports && nic_name) {
+                ofport = u16_to_ofp(simap_get(physical_ofports,
+                                      nic_name));
+                VLOG_INFO("logical_port: %s, out_nic ofindex6: %d",binding->logical_port,ofport);
+            }
+
             if (!ofport) {
                 goto out;
             }
@@ -1520,7 +1541,8 @@ consider_mc_group(struct ovsdb_idl_index *sbrec_port_binding_by_name,
                        || !strcmp(port->type, "l3gateway"))) {
             put_load(port->tunnel_key, MFF_LOG_OUTPORT, 0, 32, &ofpacts);
             put_resubmit(OFTABLE_CHECK_LOOPBACK, &ofpacts);
-        } else if (simap_contains(patch_ofports, port->logical_port)) {
+        } else if (simap_contains(patch_ofports, port->logical_port)
+            || !strcmp(port->type, "localnet")) {
             put_load(port->tunnel_key, MFF_LOG_OUTPORT, 0, 32, &ofpacts);
             put_resubmit(OFTABLE_CHECK_LOOPBACK, &ofpacts);
         } else if (!strcmp(port->type, "chassisredirect")
@@ -1617,6 +1639,7 @@ physical_eval_port_binding(struct physical_ctx *p_ctx,
                           p_ctx->local_datapaths,
                           p_ctx->local_bindings,
                           p_ctx->patch_ofports,
+                          p_ctx->physical_ofports,
                           p_ctx->chassis_tunnels,
                           pb, p_ctx->chassis, flow_table, &ofpacts);
     ofpbuf_uninit(&ofpacts);
@@ -1711,6 +1734,7 @@ physical_run(struct physical_ctx *p_ctx,
                               p_ctx->active_tunnels, p_ctx->local_datapaths,
                               p_ctx->local_bindings,
                               p_ctx->patch_ofports,
+                              p_ctx->physical_ofports,
                               p_ctx->chassis_tunnels, binding,
                               p_ctx->chassis, flow_table, &ofpacts);
     }
