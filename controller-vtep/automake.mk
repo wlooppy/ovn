@@ -8,7 +8,9 @@ controller_vtep_ovn_controller_vtep_SOURCES = \
 	controller-vtep/ovn-controller-vtep.h \
 	controller-vtep/vtep.c \
 	controller-vtep/vtep.h
-controller_vtep_ovn_controller_vtep_LDADD = lib/libovn.la $(OVS_LIBDIR)/libopenvswitch.la $(OVSBUILDDIR)/vtep/libvtep.la
+controller_vtep_ovn_controller_vtep_LDADD = \
+	lib/libovn.la $(OVS_LIBDIR)/libopenvswitch.la $(OVSBUILDDIR)/vtep/libvtep.la \
+	/usr/local/lib/x86_64-linux-gnu/librte_bus_vdev.a
 man_MANS += controller-vtep/ovn-controller-vtep.8
 EXTRA_DIST += controller-vtep/ovn-controller-vtep.8.xml
 CLEANFILES += controller-vtep/ovn-controller-vtep.8

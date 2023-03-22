@@ -76,7 +76,9 @@ utilities_ovn_nbctl_SOURCES = \
     utilities/ovn-dbctl.c \
     utilities/ovn-dbctl.h \
     utilities/ovn-nbctl.c
-utilities_ovn_nbctl_LDADD = lib/libovn.la $(OVSDB_LIBDIR)/libovsdb.la $(OVS_LIBDIR)/libopenvswitch.la
+utilities_ovn_nbctl_LDADD = \
+    lib/libovn.la $(OVSDB_LIBDIR)/libovsdb.la $(OVS_LIBDIR)/libopenvswitch.la \
+    /usr/local/lib/x86_64-linux-gnu/librte_bus_vdev.a
 
 # ovn-sbctl
 bin_PROGRAMS += utilities/ovn-sbctl
@@ -84,27 +86,37 @@ utilities_ovn_sbctl_SOURCES = \
     utilities/ovn-dbctl.c \
     utilities/ovn-dbctl.h \
     utilities/ovn-sbctl.c
-utilities_ovn_sbctl_LDADD = lib/libovn.la $(OVSDB_LIBDIR)/libovsdb.la $(OVS_LIBDIR)/libopenvswitch.la
+utilities_ovn_sbctl_LDADD = \
+    lib/libovn.la $(OVSDB_LIBDIR)/libovsdb.la $(OVS_LIBDIR)/libopenvswitch.la \
+    /usr/local/lib/x86_64-linux-gnu/librte_bus_vdev.a
 
 # ovn-ic-nbctl
 bin_PROGRAMS += utilities/ovn-ic-nbctl
 utilities_ovn_ic_nbctl_SOURCES = utilities/ovn-ic-nbctl.c
-utilities_ovn_ic_nbctl_LDADD = lib/libovn.la $(OVSDB_LIBDIR)/libovsdb.la $(OVS_LIBDIR)/libopenvswitch.la
+utilities_ovn_ic_nbctl_LDADD = \
+    lib/libovn.la $(OVSDB_LIBDIR)/libovsdb.la $(OVS_LIBDIR)/libopenvswitch.la \
+    /usr/local/lib/x86_64-linux-gnu/librte_bus_vdev.a
 
 # ovn-ic-sbctl
 bin_PROGRAMS += utilities/ovn-ic-sbctl
 utilities_ovn_ic_sbctl_SOURCES = utilities/ovn-ic-sbctl.c
-utilities_ovn_ic_sbctl_LDADD = lib/libovn.la $(OVSDB_LIBDIR)/libovsdb.la $(OVS_LIBDIR)/libopenvswitch.la
+utilities_ovn_ic_sbctl_LDADD = \
+    lib/libovn.la $(OVSDB_LIBDIR)/libovsdb.la $(OVS_LIBDIR)/libopenvswitch.la \
+    /usr/local/lib/x86_64-linux-gnu/librte_bus_vdev.a
 
 # ovn-trace
 bin_PROGRAMS += utilities/ovn-trace
 utilities_ovn_trace_SOURCES = utilities/ovn-trace.c
-utilities_ovn_trace_LDADD = lib/libovn.la $(OVSDB_LIBDIR)/libovsdb.la $(OVS_LIBDIR)/libopenvswitch.la
+utilities_ovn_trace_LDADD = \
+    lib/libovn.la $(OVSDB_LIBDIR)/libovsdb.la $(OVS_LIBDIR)/libopenvswitch.la \
+    /usr/local/lib/x86_64-linux-gnu/librte_bus_vdev.a
 
 # ovn-nbctl
 bin_PROGRAMS += utilities/ovn-appctl
 utilities_ovn_appctl_SOURCES = utilities/ovn-appctl.c
-utilities_ovn_appctl_LDADD = lib/libovn.la $(OVSDB_LIBDIR)/libovsdb.la $(OVS_LIBDIR)/libopenvswitch.la
+utilities_ovn_appctl_LDADD = \
+    lib/libovn.la $(OVSDB_LIBDIR)/libovsdb.la $(OVS_LIBDIR)/libopenvswitch.la \
+    /usr/local/lib/x86_64-linux-gnu/librte_bus_vdev.a
 
 # ovn-detrace
 INSTALL_DATA_LOCAL += ovn-detrace-install

@@ -1077,6 +1077,11 @@ consider_port_binding(struct ovsdb_idl_index *sbrec_port_binding_by_name,
             ofport = u16_to_ofp(simap_get(physical_ofports,
                                       nic_name));
             VLOG_INFO("logical_port: %s, out_nic ofindex: %d",binding->logical_port,ofport);
+            if (!ofport) {
+                ofport = u16_to_ofp(simap_get(physical_ofports,"dpdk0"));
+                VLOG_INFO("try to get  default dpdk nic dpdk0, logical_port: %s, out_nic ofindex: %d",
+                    binding->logical_port,ofport);
+            }
         }
         if (ofport && binding->tag) {
             tag = *binding->tag;

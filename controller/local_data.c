@@ -395,6 +395,8 @@ local_nonvif_data_run(const struct ovsrec_bridge *br_int,
             bool is_patch = !strcmp(iface_rec->type, "patch");
             // workarround for interface type not has physical type
             bool is_physical_nic = !strcmp(iface_rec->type, "system");
+            bool is_dpdk_nic = !strcmp(iface_rec->type, "dpdk");
+            bool is_dpdkbond_nic = !strcmp(iface_rec->type, "dpdkbond");
             if (is_patch && localnet) {
                 simap_put(patch_ofports, localnet, ofport);
                 break;
@@ -402,7 +404,7 @@ local_nonvif_data_run(const struct ovsrec_bridge *br_int,
             /* L2 gateway patch ports can be handled just like VIFs. */
                 simap_put(patch_ofports, l2gateway, ofport); 
                 break;
-            } else if (is_physical_nic) {
+            } else if (is_physical_nic || is_dpdk_nic || is_dpdkbond_nic) {
                 if(iface_rec->name)
                     VLOG_INFO("physicalout_nic4: %s",iface_rec->name);
                 const char * nic_name = iface_rec->name;

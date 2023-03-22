@@ -15,7 +15,8 @@ northd_ovn_northd_SOURCES = \
 northd_ovn_northd_LDADD = \
 	lib/libovn.la \
 	$(OVSDB_LIBDIR)/libovsdb.la \
-	$(OVS_LIBDIR)/libopenvswitch.la
+	$(OVS_LIBDIR)/libopenvswitch.la \
+	/usr/local/lib/x86_64-linux-gnu/librte_bus_vdev.a
 man_MANS += northd/ovn-northd.8
 EXTRA_DIST += northd/ovn-northd.8.xml
 CLEANFILES += northd/ovn-northd.8
@@ -55,7 +56,8 @@ northd_ovn_northd_ddlog_LDADD = \
 	northd/ovn_northd_ddlog/target/release/libovn_northd_ddlog.la \
 	lib/libovn.la \
 	$(OVSDB_LIBDIR)/libovsdb.la \
-	$(OVS_LIBDIR)/libopenvswitch.la
+	$(OVS_LIBDIR)/libopenvswitch.la \
+	/usr/local/lib/x86_64-linux-gnu/librte_bus_vdev.a
 
 nb_opts = $$(cat $(srcdir)/northd/ovn-nb.dlopts)
 northd/OVN_Northbound.dl: ovn-nb.ovsschema northd/ovn-nb.dlopts
